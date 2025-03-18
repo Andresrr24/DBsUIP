@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Libros</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Buscar Libros</h1>
+    <form method="POST">
+        <input type="text" name="query" placeholder="Buscar por título, autor o género" required>
+        <button type="submit">Buscar</button>
+    </form>
+    {% if query %}
+    <h2>Resultados para "{{ query }}":</h2>
+    <ul>
+        {% for libro in libros %}
+        <li>{{ libro.titulo }} - {{ libro.autor }} ({{ libro.genero }})</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <a href="{{ url_for('index') }}">Volver al Inicio</a>
+</body>
+</html>
