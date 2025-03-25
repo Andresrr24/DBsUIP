@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Libro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('agregar_libro') }}">Agregar Libro</a>
+        <a href="{{ url_for('buscar_libros') }}">Buscar Libros</a>
+    </div>
+    <div class="container">
+        <h1>Editar Libro</h1>
+        <form method="POST">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" value="{{ libro['titulo'] }}" required>
+            <label for="autor">Autor:</label>
+            <input type="text" id="autor" name="autor" value="{{ libro['autor'] }}" required>
+            <label for="genero">Género:</label>
+            <input type="text" id="genero" name="genero" value="{{ libro['genero'] }}" required>
+            <input type="submit" value="Guardar Cambios">
+        </form>
+    </div>
+</body>
+</html>
