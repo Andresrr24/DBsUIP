@@ -1,9 +1,17 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import keydb
+from email_tasks import send_email_async
+from celery import Celery
+import os
 
 app = Flask(__name__)
 
 db = keydb.KeyDB(host='localhost', port=6379, db=0)
+
+celery = Celery(
+    app.name,
+    broker=os.getenv('KEYDB_URL', 'keydb://localhost:6379/0')
+)
 
 @app.route('/')
 def index():
@@ -72,6 +80,30 @@ def buscar_libros():
                 libros.append(libro_decodificado)
         return render_template('buscar_libros.html', libros=libros, query=query)
     return render_template('buscar_libros.html')
+
+@app.route('/send-email', methods=['POST'])
+def send_email_handler():
+    try:
+        data = request.json
+        
+        # Validación
+        if not all(key in data for key in ['to', 'subject', 'body']):
+            return jsonify({'error': 'Faltan campos requeridos'}), 400
+        
+        # Configuración del correo
+        email_data = {
+            'to': data['to'],
+            'subject': data['subject'],
+            'body': data['body'],
+        }
+
+        # Envío asíncrono del correo
+        send_email_async.delay(email_data)
+        
+        return jsonify({'message': 'Solicitud de envío de correo recibida'}), 202
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
